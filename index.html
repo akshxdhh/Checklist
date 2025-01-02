@@ -339,6 +339,12 @@
             
             document.getElementById('cookiePopup').style.display = 'none';
         });
+        const radioButtons = document.getElementById('star-1');
+        const sound2 = new Audio('src/hub-intro-sound.mp3'); 
+            radioButtons.addEventListener('click', () => {
+            sound2.currentTime = 0; 
+            sound2.play(); 
+            });
       
 
       window.onload = function() {
@@ -414,7 +420,7 @@
                   checkbox.id = `module-${index}-topic-${tIndex}`;
 
                   document.body.appendChild(checkbox);
-                  const sound = new Audio('rizz-sounds.mp3'); 
+                  const sound = new Audio('src/rizz-sounds.mp3'); 
 
                   checkbox.addEventListener('change', () => {
 
