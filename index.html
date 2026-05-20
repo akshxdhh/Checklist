@@ -1,537 +1,489 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KTU Chemistry Checklist</title>
-    <link rel="icon" href="https://github.com/user-attachments/assets/0b5bd277-d0bc-4173-b14c-6ee0c734028f"
-        type="image/x-icon" />
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-        @keyframes blinkCursor {
-            50% {
-                border-right-color: transparent;
-            }
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOC Checklist</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --green: #238636;
+      --blue: #58a6ff;
+      --danger: #da3633;
+      --shadow: 0 8px 30px rgba(1, 4, 9, 0.45);
+      --radius: 12px;
+    }
 
-        @keyframes typeAndDelete {
-            0%,
-            10% {
-                width: 0;
-            }
-            45%,
-            55% {
-                width: 6.2em;
-            }
-            90%,
-            100% {
-                width: 0;
-            }
-        }
-        body {
-            background-color: #2b2b2b;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-       .content h1{
-          font-family: "Montserrat", serif;
-          font-optical-sizing: auto;
-          font-weight: 600;
-          font-style: normal;
-        }
-        .terminal-loader {
-            border: 0.1em solid #333;
-            background-color: #1a1a1a;
-            color: #0f0;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 1em;
-            padding: 1.5em 1em;
-            width: 12em;
-            margin: 100px auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
 
-        .terminal-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1.5em;
-            background-color: #333;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            padding: 0 0.4em;
-            box-sizing: border-box;
-        }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
 
-        .terminal-controls {
-            float: right;
-        }
+    .header {
+      margin-bottom: 18px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      letter-spacing: .2px;
+    }
+    .subtitle { color: var(--blue); margin-top: 6px; font-weight: 600; }
+    .tagline { color: var(--muted); margin-top: 8px; }
 
-        .control {
-            display: inline-block;
-            width: 0.6em;
-            height: 0.6em;
-            margin-left: 0.4em;
-            border-radius: 50%;
-            background-color: #777;
-        }
+    .sticky-progress {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(13,17,23,.92), rgba(13,17,23,.82));
+      padding: 10px 0;
+      margin-bottom: 14px;
+    }
 
-        .control.close {
-            background-color: #e33;
-        }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
 
-        .control.minimize {
-            background-color: #ee0;
-        }
+    .progress-card { padding: 16px; }
+    .progress-top {
+      display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    }
+    .percent {
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .meta { color: var(--muted); font-size: .95rem; }
 
-        .control.maximize {
-            background-color: #0b0;
-        }
+    .progress-wrap {
+      margin: 12px 0;
+      width: 100%;
+      height: 12px;
+      background: #0b0f14;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #2ea043, var(--green));
+      transition: width .35s ease;
+    }
 
-        .terminal-title {
-            float: left;
-            line-height: 1.5em;
-            color: #eee;
-        }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 12px;
+    }
 
-        .text {
-            display: inline-block;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 0.2em solid green; 
-            animation: typeAndDelete 4s steps(11) infinite,
-                blinkCursor 0.5s step-end infinite alternate;
-            margin-top: 1.5em;
-        }
+    input[type="search"] {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    input[type="search"]:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(88,166,255,.2);
+    }
 
-        #content {
-            display: none;
-        }
-        .rating {
-          position: fixed; 
-          bottom: 0;       
-          right: 0;        
-          margin: 20px;
-          display: flex;
-          flex-direction: row-reverse;
-          gap: 0.3rem;
-          --stroke: #969696;
-          --fill: #ffc73a;
-        }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      border: 1px solid var(--border);
+      background: #21262d;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all .18s ease;
+    }
+    button:hover { transform: translateY(-1px); border-color: #4b5560; }
+    button.active { border-color: var(--blue); color: var(--blue); }
+    .btn-green { background: rgba(35,134,54,.2); border-color: #2ea043; }
+    .btn-red { background: rgba(218,54,51,.15); border-color: #f85149; }
 
-      .rating input {
-        appearance: unset;
-      }
+    .celebration {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #2ea043;
+      background: rgba(35,134,54,.16);
+      color: #7ee787;
+      animation: pop .5s ease;
+    }
+    .celebration.show { display: block; }
+    @keyframes pop {
+      0% { transform: scale(.98); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
-      .rating label {
-        cursor: pointer;
-      }
+    .sections { display: grid; gap: 12px; }
+    .section { overflow: hidden; }
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title-wrap { min-width: 0; }
+    .section-toggle {
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      text-align: left;
+      padding: 0;
+      font-weight: 600;
+      width: 100%;
+    }
+    .section-count { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
-      .rating svg {
-        width: 2rem;
-        height: 2rem;
-        overflow: visible;
-        fill: transparent;
-        stroke: var(--stroke);
-        stroke-linejoin: bevel;
-        stroke-dasharray: 12;
-        animation: idle 4s linear infinite;
-        transition: stroke 0.2s, fill 0.5s;
-      }
+    .section-actions { display: flex; gap: 8px; }
 
-      @keyframes idle {
-        from {
-          stroke-dashoffset: 24;
-        }
-      }
+    .section-body {
+      max-height: 2000px;
+      transition: max-height .35s ease;
+    }
+    .section.collapsed .section-body { max-height: 0; }
 
-      .rating label:hover svg {
-        stroke: var(--fill);
-      }
+    .topic-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-top: 1px solid rgba(48,54,61,.55);
+      transition: background .2s ease;
+    }
+    .topic-row:hover { background: rgba(88,166,255,.07); }
+    .topic-row.hidden { display: none; }
 
-      .rating input:checked ~ label svg {
-        transition: 0s;
-        animation: idle 4s linear infinite, yippee 0.75s backwards;
-        fill: var(--fill);
-        stroke: var(--fill);
-        stroke-opacity: 0;
-        stroke-dasharray: 0;
-        stroke-linejoin: miter;
-        stroke-width: 8px;
-      }
+    .topic-label { flex: 1; cursor: pointer; }
+    .topic-label.completed { color: var(--muted); text-decoration: line-through; }
 
-      @keyframes yippee {
-        0% {
-          transform: scale(1);
-          fill: var(--fill);
-          fill-opacity: 0;
-          stroke-opacity: 1;
-          stroke: var(--stroke);
-          stroke-dasharray: 10;
-          stroke-width: 1px;
-          stroke-linejoin: bevel;
-        }
+    mark {
+      background: rgba(88,166,255,.25);
+      color: var(--text);
+      border-radius: 3px;
+      padding: 0 1px;
+    }
 
-        30% {
-          transform: scale(0);
-          fill: var(--fill);
-          fill-opacity: 0;
-          stroke-opacity: 1;
-          stroke: var(--stroke);
-          stroke-dasharray: 10;
-          stroke-width: 1px;
-          stroke-linejoin: bevel;
-        }
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .92rem;
+    }
 
-        30.1% {
-          stroke: var(--fill);
-          stroke-dasharray: 0;
-          stroke-linejoin: miter;
-          stroke-width: 8px;
-        }
+    .kbd {
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-size: .8rem;
+      color: var(--muted);
+    }
 
-        60% {
-          transform: scale(1.2);
-          fill: var(--fill);
-        }
-      }
-      .actions {
-        margin-top: 10px;
-      }
-      .actions button {
-            margin-right: 5px;
-            padding: 5px 10px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .actions button:hover {
-            background-color: #2980b9;
-        }
-        #cookiePopup {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            z-index: 1000;
-        }
-
-        #cookiePopup button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: 20px;
-        }
-
-        #cookiePopup button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    @media (max-width: 760px) {
+      .toolbar { grid-template-columns: 1fr; }
+      .section-head { grid-template-columns: 1fr; }
+      .section-actions { justify-content: flex-start; }
+    }
+  </style>
 </head>
 <body>
-    <div id="loader" class="terminal-loader">
-        <div class="terminal-header">
-            <div class="terminal-title">Status</div>
-            <div class="terminal-controls">
-                <div class="control close"></div>
-                <div class="control minimize"></div>
-                <div class="control maximize"></div>
+  <main class="container" aria-live="polite">
+    <header class="header">
+      <h1>Theory of Computation Checklist</h1>
+      <div class="subtitle">24-Hour Exam Preparation Tracker</div>
+      <div class="tagline">Turning exam panic into neatly organized checkboxes. Humanity's finest invention.</div>
+    </header>
+
+    <section class="sticky-progress" aria-label="Overall Progress">
+      <div class="card progress-card">
+        <div class="progress-top">
+          <div>
+            <div class="percent" id="progressPercent">0%</div>
+            <div class="meta" id="progressMeta">0 / 0 completed</div>
+            <div class="meta" id="remainingMeta">Estimated remaining topics: 0</div>
+            <div class="meta" id="updatedMeta">Last updated: never</div>
+          </div>
+          <button id="resetBtn" class="btn-red" type="button">Reset All Progress</button>
+        </div>
+        <div class="progress-wrap" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </section>
+
+    <section class="card toolbar" aria-label="Search and Filter Toolbar">
+      <label for="searchInput" class="sr-only" style="position:absolute;left:-9999px;">Search topics</label>
+      <input id="searchInput" type="search" placeholder="Search topics... (Ctrl+F)" autocomplete="off" />
+      <div class="btn-row" role="group" aria-label="Filter tasks">
+        <button type="button" data-filter="all" class="active">All</button>
+        <button type="button" data-filter="pending">Pending</button>
+        <button type="button" data-filter="completed">Completed</button>
+      </div>
+    </section>
+
+    <div id="celebration" class="celebration" role="status" aria-live="polite">All topics completed. Even the Halting Problem couldn't stop you.</div>
+
+    <section id="sections" class="sections" aria-label="Checklist sections"></section>
+
+    <footer class="footer">
+      Progress is saved automatically in your browser. Shortcuts: <span class="kbd">Ctrl+F</span> search, <span class="kbd">Ctrl+R</span> reset.
+    </footer>
+  </main>
+
+  <script>
+    // TOC checklist source data.
+    const CHECKLIST_DATA = [
+      { title: "Module 1 - Finite Automata", topics: ["Motivation for Studying Computability","Symbols, Alphabets, Strings, Languages","Powers of Alphabet (Σ*, Σ+)","Formal Definition of DFA","Design of DFA","Formal Definition of NFA","ε-NFA and ε-closure","Elimination of ε-transitions","NFA to DFA Conversion (Subset Construction)","DFA Minimization (Myhill-Nerode)"] },
+      { title: "Module 2 - Regular Languages and CFG Introduction", topics: ["Formal Definition of Regular Expression","Regular Expression Identities","RE to FA Conversion","FA to RE Conversion (State Elimination)","Closure Properties of Regular Languages","Decision Properties of Regular Languages","Pumping Lemma for Regular Languages","Formal Definition of CFG","Designing Context-Free Grammars"] },
+      { title: "Module 3 - PDA and Context-Free Languages", topics: ["Formal Definition of PDA","DPDA vs NPDA","Design of PDA","CFG to PDA Conversion","PDA to CFG Conversion","Elimination of Useless Symbols","Elimination of ε-productions","Elimination of Unit Productions","Chomsky Normal Form (CNF)","Greibach Normal Form (GNF)","Pumping Lemma for CFL","Closure Properties of CFL","Decision Properties of CFL"] },
+      { title: "Module 4 - Turing Machines and Undecidability", topics: ["Context Sensitive Grammar","Linear Bounded Automata","Formal Definition of Turing Machine","Design of Turing Machine","Recursive Languages","Recursively Enumerable Languages","Decidable Problems","Undecidable Problems","Halting Problem","Post Correspondence Problem (PCP)"] },
+      { title: "Formal Definitions to Memorize", topics: ["DFA","NFA","ε-NFA","Regular Expression","CFG","PDA","CNF","GNF","Turing Machine","Recursive Language","Recursively Enumerable Language","PCP"] },
+      { title: "Practice Questions", topics: ["Design 5 DFA problems","Convert 3 ε-NFA to DFA","Solve 3 DFA minimization problems","Convert 3 RE to FA problems","Solve 3 Pumping Lemma problems","Design 5 CFG problems","Convert 2 CFG to CNF","Convert 2 CFG to GNF","Design 3 PDA problems","Convert CFG ↔ PDA","Design 2 Turing Machines","Write Halting Problem proof","Solve 2 PCP problems"] }
+    ];
+
+    const STORAGE_KEY = "toc_checklist_state_v1";
+    const STORAGE_META_KEY = "toc_checklist_meta_v1";
+    const sectionsEl = document.getElementById("sections");
+    const progressPercentEl = document.getElementById("progressPercent");
+    const progressMetaEl = document.getElementById("progressMeta");
+    const remainingMetaEl = document.getElementById("remainingMeta");
+    const updatedMetaEl = document.getElementById("updatedMeta");
+    const progressFillEl = document.getElementById("progressFill");
+    const searchInput = document.getElementById("searchInput");
+    const celebrationEl = document.getElementById("celebration");
+
+    let state = loadState();
+    let activeFilter = "all";
+    let searchTerm = "";
+
+    function makeTopicId(sectionIndex, topicIndex) { return `${sectionIndex}-${topicIndex}`; }
+
+    // Render complete checklist UI from data.
+    function renderChecklist() {
+      sectionsEl.innerHTML = "";
+      CHECKLIST_DATA.forEach((section, sectionIndex) => {
+        const sectionCard = document.createElement("article");
+        sectionCard.className = "card section";
+        sectionCard.dataset.section = sectionIndex;
+        sectionCard.classList.toggle("collapsed", !!state.collapsed?.[sectionIndex]);
+
+        const doneCount = section.topics.filter((_, topicIndex) => !!state.checked[makeTopicId(sectionIndex, topicIndex)]).length;
+
+        sectionCard.innerHTML = `
+          <div class="section-head">
+            <div class="section-title-wrap">
+              <button class="section-toggle" aria-expanded="${!state.collapsed?.[sectionIndex]}" aria-controls="body-${sectionIndex}">${section.title}</button>
+              <div class="section-count" id="count-${sectionIndex}">${doneCount} / ${section.topics.length} completed</div>
             </div>
-        </div>
-        <div class="text">Loading...</div>
-    </div>
+            <div class="section-actions">
+              <button type="button" class="btn-green" data-action="mark-all">Mark All</button>
+              <button type="button" class="btn-red" data-action="clear-section">Clear Section</button>
+            </div>
+          </div>
+          <div class="section-body" id="body-${sectionIndex}" role="region" aria-label="${section.title}"></div>
+        `;
 
-    <div id="cookiePopup">
-      <p>We use cookies to improve your experience. By using our website, you accept our <a href="#">cookie policy</a>.</p>
-      <button id="acceptCookiesBtn">Accept</button>
-    </div>
+        const body = sectionCard.querySelector(".section-body");
+        section.topics.forEach((topic, topicIndex) => {
+          const id = makeTopicId(sectionIndex, topicIndex);
+          const checked = !!state.checked[id];
+          const row = document.createElement("div");
+          row.className = "topic-row";
+          row.dataset.topic = topic;
+          row.dataset.checked = checked;
 
-    <div id="content">
-        <h1>KTU CHEMISTRY CHECKLIST</h1>
-        
-        <div id="modules">
-            
-        </div>
+          const checkboxId = `topic-${id}`;
+          row.innerHTML = `
+            <input type="checkbox" id="${checkboxId}" ${checked ? "checked" : ""} aria-label="${topic}" />
+            <label class="topic-label ${checked ? "completed" : ""}" for="${checkboxId}">${escapeHtml(topic)}</label>
+          `;
 
-        <div class="actions">
-            <button onclick="addModule()">Add Module</button>
-        </div>
-    </div>
-    </div>
-    <div class="rating">
-      <input type="radio" id="star-1" name="star-radio" value="star-1" />
-      <label for="star-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path
-            pathLength="360"
-            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
-          ></path>
-        </svg>
-      </label>
-      <input type="radio" id="star-2" name="star-radio" value="star-1" />
-      <label for="star-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path
-            pathLength="360"
-            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
-          ></path>
-        </svg>
-      </label>
-      <input type="radio" id="star-3" name="star-radio" value="star-1" />
-      <label for="star-3">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path
-            pathLength="360"
-            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
-          ></path>
-        </svg>
-      </label>
-      <input type="radio" id="star-4" name="star-radio" value="star-1" />
-      <label for="star-4">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path
-            pathLength="360"
-            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
-          ></path>
-        </svg>
-      </label>
-      <input type="radio" id="star-5" name="star-radio" value="star-1" />
-      <label for="star-5">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path
-            pathLength="360"
-            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"
-          ></path>
-        </svg>
-      </label>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-      if (localStorage.getItem('cookiesAccepted') === 'true') {
-            console.log('Cookies already accepted, hiding popup');
-            document.getElementById('cookiePopup').style.display = 'none'; 
-        } else {
-            console.log('Cookies not accepted, showing popup');
-            document.getElementById('cookiePopup').style.display = 'block'; 
-        }
-
-        document.getElementById('acceptCookiesBtn').addEventListener('click', function() {
-            console.log('Accept Cookies Button Clicked');
-            
-            localStorage.setItem('cookiesAccepted', 'true');
-            console.log('cookiesAccepted set to true in localStorage');
-            
-            document.getElementById('cookiePopup').style.display = 'none';
-        });
-        const radioButtons = document.getElementById('star-1');
-        const sound2 = new Audio('src/hub-intro-sound.mp3'); 
-            radioButtons.addEventListener('click', () => {
-            sound2.currentTime = 0; 
-            sound2.play(); 
-            });
-      
-
-      window.onload = function() {
-          setTimeout(() => {
-              document.getElementById('loader').style.display = 'none';
-              document.getElementById('content').style.display = 'block';
-          }, 3000);
-      };
-
-      const syllabus = [
-          {
-              module: "Electrochemistry and Corrosion Science",
-              topics: [
-                  "Electrochemical Cell and Nernst Equation",
-                  "Reference Electrodes (SHE & Calomel)",
-                  "Glass Electrode & pH Measurement",
-                  "Conductivity Measurement",
-                  "Li-ion Battery and H2-O2 Fuel Cell",
-                  "Corrosion Mechanisms",
-                  "Cathodic Protection Methods",
-                  "Electroplating and Electroless Plating of Copper"
-              ]
-          },
-          {
-              module: "Materials for Electronic Applications",
-              topics: [
-                  "Nanomaterials - Classification and Synthesis",
-                  "Carbon Nanotubes, Graphene, and Quantum Dots",
-                  "Conducting Polymers",
-                  "Organic Light Emitting Diode (OLED)",
-                  "Materials for Quantum Computing, Supercapacitors, and Spintronics"
-              ]
-          },
-          {
-              module: "Molecular Spectroscopy and Analytical Techniques",
-              topics: [
-                  "Beer Lambert's Law",
-                  "Electronic Spectroscopy",
-                  "Vibrational Spectroscopy",
-                  "Thermal Analysis of Polymers",
-                  "Electron Microscopy (SEM)"
-              ]
-          },
-          {
-              module: "Environmental Chemistry",
-              topics: [
-                  "Water Hardness and Softening Methods",
-                  "Reverse Osmosis and Disinfection Methods",
-                  "Dissolved Oxygen, BOD, COD",
-                  "Sewage Treatment and Waste Management",
-                  "Chemistry of Climate Change and Sustainable Development"
-              ]
-          }
-      ];
-
-      function loadModules() {
-          const modulesContainer = document.getElementById('modules');
-          modulesContainer.innerHTML = '';
-          syllabus.forEach((mod, index) => {
-              const moduleDiv = document.createElement('div');
-              moduleDiv.className = 'module';
-
-              const moduleHeader = document.createElement('h2');
-              moduleHeader.textContent = `${index + 1}. ${mod.module}`;
-              moduleDiv.appendChild(moduleHeader);
-
-              mod.topics.forEach((topic, tIndex) => {
-                  const topicDiv = document.createElement('div');
-                  topicDiv.className = 'topic';
-
-                  const checkbox = document.createElement('input');
-                  checkbox.type = 'checkbox';
-                  checkbox.id = `module-${index}-topic-${tIndex}`;
-
-                  document.body.appendChild(checkbox);
-                  const sound = new Audio('src/rizz-sounds.mp3'); 
-
-                  checkbox.addEventListener('change', () => {
-
-                    if (checkbox.checked) {
-                    sound.play(); 
-                    }
-                  });
-                  function triggerConfetti() {
-                    confetti({
-                    particleCount: 100,
-                    spread: 80,
-                    origin: { y: 1 }
-                    });
-                  }
-
-                  checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                      triggerConfetti(); 
-                    }
-                  });
-
-                  const label = document.createElement('label');
-                  label.htmlFor = checkbox.id;
-                  label.textContent = topic;
-
-                  topicDiv.appendChild(checkbox);
-                  topicDiv.appendChild(label);
-                  moduleDiv.appendChild(topicDiv);
-              });
-
-              const actionsDiv = document.createElement('div');
-              actionsDiv.className = 'actions';
-              
-              const addButton = document.createElement('button');
-              addButton.textContent = 'Add Topic';
-              addButton.onclick = () => addTopic(index);
-
-              const deleteButton = document.createElement('button');
-              deleteButton.textContent = 'Delete Module';
-              deleteButton.onclick = () => deleteModule(index);
-
-              actionsDiv.appendChild(addButton);
-              actionsDiv.appendChild(deleteButton);
-
-              moduleDiv.appendChild(actionsDiv);
-              modulesContainer.appendChild(moduleDiv);
+          row.querySelector("input").addEventListener("change", (e) => {
+            state.checked[id] = e.target.checked;
+            saveState();
+            renderChecklist();
+            applySearch();
+            updateProgress();
           });
-      }
 
-      function addModule() {
-          const moduleName = prompt('Enter the name of the new module:');
-          if (moduleName) {
-              syllabus.push({ module: moduleName, topics: [] });
-              loadModules();
-          }
-      }
+          body.appendChild(row);
+        });
 
-      function deleteModule(index) {
-          if (confirm(`Are you sure you want to delete the module: ${syllabus[index].module}?`)) {
-              syllabus.splice(index, 1);
-              loadModules();
-          }
-      }
-      function addTopic(moduleIndex) {
-          const topicName = prompt('Enter the new topic name:');
-          if (topicName) {
-              syllabus[moduleIndex].topics.push(topicName);
-              loadModules();
-          }
-      }
-      loadModules();
-      (function () {
-        const devTools = {
-          opened: false,
-          threshold: 160,
-          check: function () {
-            const widthThreshold =
-              window.outerWidth - window.innerWidth > this.threshold;
-            const heightThreshold =
-              window.outerHeight - window.innerHeight > this.threshold;
-            if (widthThreshold || heightThreshold) {
-              if (!this.opened) {
-                this.onOpen();
-              }
-              this.opened = true;
-            } else {
-              if (this.opened) {
-                this.onClose();
-              }
-              this.opened = false;
-            }
-          },
-          onOpen: function () {
-            console.log("%cStop!", "color: red; font-size: 50px;");
-            console.log(
-              "%cThis is a browser feature intended for developers nigga!.",
-              "color: gray; font-size: 20px;"
-            );
-          },
-          onClose: function () {
-          },
-          init: function () {
-            const _self = this;
-            setInterval(function () {
-              _self.check();
-            }, 1000);
-          },
-        };
+        sectionCard.querySelector(".section-toggle").addEventListener("click", () => toggleSection(sectionIndex));
+        sectionCard.querySelector('[data-action="mark-all"]').addEventListener("click", () => setSection(sectionIndex, true));
+        sectionCard.querySelector('[data-action="clear-section"]').addEventListener("click", () => setSection(sectionIndex, false));
 
-        devTools.init();
-      })();
+        sectionsEl.appendChild(sectionCard);
+      });
+    }
+
+    function updateProgress() {
+      const total = CHECKLIST_DATA.reduce((acc, section) => acc + section.topics.length, 0);
+      const completed = Object.values(state.checked).filter(Boolean).length;
+      const pct = total ? Math.round((completed / total) * 100) : 0;
+      progressPercentEl.textContent = `${pct}%`;
+      progressMetaEl.textContent = `${completed} / ${total} completed`;
+      remainingMetaEl.textContent = `Estimated remaining topics: ${total - completed}`;
+      progressFillEl.style.width = `${pct}%`;
+      updateLastUpdated();
+
+      // Update section-level counters.
+      CHECKLIST_DATA.forEach((section, sectionIndex) => {
+        const doneCount = section.topics.filter((_, topicIndex) => !!state.checked[makeTopicId(sectionIndex, topicIndex)]).length;
+        const node = document.getElementById(`count-${sectionIndex}`);
+        if (node) node.textContent = `${doneCount} / ${section.topics.length} completed`;
+      });
+
+      celebrateCompletion(pct === 100);
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORAGE_META_KEY, JSON.stringify({ updatedAt: new Date().toISOString() }));
+    }
+
+    function loadState() {
+      const defaultState = { checked: {}, collapsed: {} };
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? { ...defaultState, ...JSON.parse(raw) } : defaultState;
+      } catch { return defaultState; }
+    }
+
+    function applySearch() {
+      const q = searchTerm.trim().toLowerCase();
+      document.querySelectorAll(".topic-row").forEach((row) => {
+        const text = row.dataset.topic;
+        const matchesSearch = !q || text.toLowerCase().includes(q);
+        const isChecked = row.dataset.checked === "true";
+        const matchesFilter = activeFilter === "all" || (activeFilter === "pending" ? !isChecked : isChecked);
+        row.classList.toggle("hidden", !(matchesSearch && matchesFilter));
+
+        const label = row.querySelector(".topic-label");
+        label.innerHTML = highlightText(text, q);
+      });
+    }
+
+    function applyFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll("[data-filter]").forEach((btn) => btn.classList.toggle("active", btn.dataset.filter === filter));
+      applySearch();
+    }
+
+    function resetChecklist() {
+      if (!confirm("Reset all progress? This will clear every checkbox.")) return;
+      state = { checked: {}, collapsed: {} };
+      saveState();
+      renderChecklist();
+      applySearch();
+      updateProgress();
+    }
+
+    function toggleSection(sectionIndex) {
+      state.collapsed[sectionIndex] = !state.collapsed[sectionIndex];
+      saveState();
+      renderChecklist();
+      applySearch();
+      updateProgress();
+    }
+
+    function celebrateCompletion(done) {
+      celebrationEl.classList.toggle("show", done);
+    }
+
+    function setSection(sectionIndex, value) {
+      CHECKLIST_DATA[sectionIndex].topics.forEach((_, topicIndex) => {
+        state.checked[makeTopicId(sectionIndex, topicIndex)] = value;
+      });
+      saveState();
+      renderChecklist();
+      applySearch();
+      updateProgress();
+    }
+
+    function updateLastUpdated() {
+      const raw = localStorage.getItem(STORAGE_META_KEY);
+      if (!raw) {
+        updatedMetaEl.textContent = "Last updated: never";
+        return;
+      }
+      try {
+        const meta = JSON.parse(raw);
+        const d = new Date(meta.updatedAt);
+        updatedMetaEl.textContent = `Last updated: ${d.toLocaleString()}`;
+      } catch {
+        updatedMetaEl.textContent = "Last updated: unknown";
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[ch]));
+    }
+
+    function highlightText(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(`(${escapedQuery})`, "ig");
+      return safe.replace(re, "<mark>$1</mark>");
+    }
+
+    // Control bindings.
+    document.querySelectorAll("[data-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => applyFilter(btn.dataset.filter));
+    });
+
+    searchInput.addEventListener("input", () => {
+      searchTerm = searchInput.value;
+      applySearch();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", resetChecklist);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === "r") {
+        e.preventDefault();
+        resetChecklist();
+      }
+    });
+
+    // Initial render.
+    renderChecklist();
+    applyFilter("all");
+    updateProgress();
   </script>
 </body>
 </html>
